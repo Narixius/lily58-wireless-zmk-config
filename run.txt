@@ -1,0 +1,20 @@
+# run docker with direct access to proxy on localhost:7890
+docker run --rm -it \
+  -e HTTP_PROXY=http://host.docker.internal:7890 \
+  -e HTTPS_PROXY=http://host.docker.internal:7890 \
+  -e ALL_PROXY=http://host.docker.internal:7890 \
+  -v $(pwd):/zmk \
+  zmkfirmware/zmk-dev-arm:3.5 \
+  bash
+
+# inside container
+cd zmk
+west init -l config
+west update
+
+west build -d build/left -s zmk/app -b nice_nano_v2   -- -DZMK_CONFIG=/zmk/config -DSHIELD=lily58_left
+west build -d build/right -s zmk/app -b nice_nano_v2   -- -DZMK_CONFIG=/zmk/config -DSHIELD=lily58_right
+
+then copy these files
+build/left/zephyr/zmk.uf2
+build/right/zephyr/zmk.uf2
